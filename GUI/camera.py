@@ -18,39 +18,44 @@ canvas.pack()
 
 #create a list of thread
 ts = []
+rgbImage = 0
+num = 0
 
-#---------------打开摄像头获取图片
+
 def video_demo():
     def cc():
-        capture = cv2.VideoCapture(0)
-        t = threading.currentThread()
-        while getattr(t, "do_run", True):
-            ret, frame = capture.read()#从摄像头读取照片
-            frame = cv2.flip(frame, 1)#翻转 0:上下颠倒 大于0水平颠倒
-            cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-            img = Image.fromarray(cv2image)
-            image_file=ImageTk.PhotoImage(img)
-            canvas.create_image(0,0,anchor='nw',image=image_file)
+        global rgbImage
+        imageName = 'DontCare.jpg' #Just a random string
+        cap = cv2.VideoCapture(0)
+        while(True):
+            ret, frame = cap.read()
+            frame = cv2.flip(frame, 1)
+            rgbImage = frame
+
+            cv2.imshow('inshow',rgbImage)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                imageName = str(time.strftime("%Y_%m_%d_%H_%M")) + '.jpg'
+                cv2.imwrite(imageName, rgbImage)
+                break
+        cap.release()
+        cv2.destroyAllWindows()
+        return imageName
 
     t=threading.Thread(target=cc)
     t.do_run = True
     t.start()
-    global ts
-    ts.append(t)
+    t.join()
 
 def get_image():
-    global ts
-    if len(ts) != 0:
-        t = ts.pop()
-        t.do_run = False
-        time.sleep(2)
-#        t.join()
+    global num
+    window.title(str(num))
+    num = num + 1
 
 
 bt_start = tk.Button(window, text='打开摄像头', height=2, width=15, command=video_demo)
 bt_start.place(x=130, y=600)
 
-bt_stop = tk.Button(window, text='', height=2, width=15, command=get_image)
+bt_stop = tk.Button(window, text='分析', height=2, width=15, command=get_image)
 bt_stop.place(x=330, y=600)
 
 window.mainloop()
