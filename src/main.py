@@ -72,9 +72,25 @@ class Window(Frame):
         window = Tk()
         window.title("Admin Login Page")
         window.resizable(0,0)
-        window.geometry("800x800")
+        window.geometry("400x400")
+        user = Label(window, text="User ID")
+        input1 = Entry(window)
+        password = Label(window, text="Password")
+        input2 = Entry(window)
+        Label(window, text="Welcome!").grid(row=0, column=0)
+        user.grid(row=1, column=0)
+        input1.grid(row=1, column=1)
+        password.grid(row=2, column=0)
+        input2.grid(row=2, column=1)
+        print(111)
+        Button(window, text="Sign in", command=self.log(input1,input2)).grid(row=3,column=0,sticky=W,pady=4)
 
         window.mainloop()
+
+    def log(self, input1, input2):
+        a = input1.get()
+        b = input2.get()
+        print(a,b)
 
 
     def showImg(self):
