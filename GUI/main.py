@@ -34,11 +34,17 @@ class Window(Frame):
         menu = Menu(self.master)
         self.master.config(menu=menu)
         image = Menu(menu)
-        image.add_command(label = "upload img", command = self.showImg)
-        menu.add_cascade(label = "image", menu = image)
-        video = Menu(menu)
-        video.add_command(label = "connect video",  command = self.video_demo)
-        menu.add_cascade(label = "video", menu = video)
+        image.add_command(label = "Image", command = self.showImg)
+        menu.add_cascade(label = "Input", menu = image)
+        # video = Menu(menu)
+        image.add_command(label = "Screenshot",  command = self.video_demo)
+        # menu.add_cascade(label = "video", menu = image)
+        database = Menu(menu)
+        database.add_command(label="Interface", command = self.database)
+        menu.add_cascade(label="Database", menu=database)
+
+
+
         '''
         # create the file object)
         file = Menu(menu)
@@ -62,6 +68,15 @@ class Window(Frame):
         #added "file" to our menu
         menu.add_cascade(label="Edit", menu=edit)
         '''
+    def database(self):
+        window = Tk()
+        window.title("Admin Login Page")
+        window.resizable(0,0)
+        window.geometry("800x800")
+
+        window.mainloop()
+
+
     def showImg(self):
         name = askopenfilename(
                            filetypes =(("Graph File", "*.jpg"),("All Files","*.*")),
@@ -73,23 +88,40 @@ class Window(Frame):
         # labels can be text or images
         img = Label(self, image=render)
         img.image = render
+        img.config(width=root.winfo_screenwidth()-840,height=root.winfo_screenheight())
         img.place(x=0, y=0)
+
+        label0 = Label(self, text="Plate Number:")
+        label0.place(x=1080,y=100)
+        label1 = Label(self, text="Confidence:")
+        label1.place(x=1080,y=200)
+        label2 = Label(self, text="State:")
+        label2.place(x=1080,y=300)
+
+        # temporary recognition result
+        # will use actual prediction to display
+        prediction = Label(self, text=str(name.split("/")[-1].split(".")[0]))
+        prediction.place(x=1080, y=150)
+        confidence = Label(self, text="100")
+        confidence.place(x=1080, y=250)
+        state = Label(self, text="New York (Yellow)")
+        state.place(x=1080, y=350)
 
     def video_demo(self):
         def cc():
             global rgbImage
-            imageName = 'DontCare.jpg' #Just a random string
             cap = cv2.VideoCapture(0)
+            imageName = ""
             while(True):
                 ret, frame = cap.read()
                 frame = cv2.flip(frame, 1)
                 rgbImage = frame
-
                 cv2.imshow('inshow',rgbImage)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     imageName = str(time.strftime("%Y_%m_%d_%H_%M")) + '.jpg'
                     cv2.imwrite(imageName, rgbImage)
                     break
+
             cap.release()
             cv2.destroyAllWindows()
             return imageName
@@ -113,6 +145,8 @@ class Window(Frame):
         exit()
 
 
+
+
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
 root = Tk()
@@ -124,5 +158,6 @@ app = Window(root)
 
 
 #mainloop
+root.geometry(str(root.winfo_screenwidth())+"x"+str(root.winfo_screenheight()))
 root.mainloop()
 

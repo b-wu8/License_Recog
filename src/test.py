@@ -1,4 +1,5 @@
 import cv2
+import torch
 from PIL import Image
 from torch import nn, optim
 from torch.autograd import Variable
@@ -28,6 +29,7 @@ train_ans = "JGT5069"
 
 model = neuralnetwork(28*28, 300, 100, 10)
 
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr = learning_rate)
 
@@ -37,8 +39,15 @@ image = transforms.ToTensor()(resized)
 
 
 for no in range(rep):
-    print("Number {}\n\n".format(no+1))
+    print("Number {}".format(no+1))
     img = Variable(image)
+    # label = Variable(train_ans)
     out = model(img)
+    _, pred = torch.max(out, 1)
+    print(pred)
+    optimizer.zero_grad()
+    optimizer.step()
+
+    print("\n\n")
     # loss = criterion(out, train_ans)
 
