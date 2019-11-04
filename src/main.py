@@ -1,9 +1,11 @@
 import cv2
 from tkinter import *
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import threading
 import time
+from database import Database
 
 # Here, we are creating our class, Window, and inheriting from the Frame
 # class. Frame is a class from the tkinter module. (see Lib/tkinter/__init__)
@@ -11,6 +13,7 @@ class Window(Frame):
     ts = []
     rgbImage = 0
     num = 0
+    loginwindow = None
     # Define settings upon initialization. Here you can specify
     def __init__(self, master=None):
 
@@ -43,31 +46,6 @@ class Window(Frame):
         database.add_command(label="Interface", command = self.database)
         menu.add_cascade(label="Database", menu=database)
 
-
-
-        '''
-        # create the file object)
-        file = Menu(menu)
-
-        # adds a command to the menu option, calling it exit, and the
-        # command it runs on event is client_exit
-        file.add_command(label="Exit", command=self.client_exit)
-
-        #added "file" to our menu
-        menu.add_cascade(label="File", menu=file)
-
-
-        # create the file object)
-        edit = Menu(menu)
-
-        # adds a command to the menu option, calling it exit, and the
-        # command it runs on event is client_exit
-        edit.add_command(label="Show Img", command=self.showImg)
-        edit.add_command(label="Show Text", command=self.showText)
-
-        #added "file" to our menu
-        menu.add_cascade(label="Edit", menu=edit)
-        '''
     def database(self):
         window = Tk()
         window.title("Admin Login Page")
@@ -76,21 +54,44 @@ class Window(Frame):
         user = Label(window, text="User ID")
         input1 = Entry(window)
         password = Label(window, text="Password")
-        input2 = Entry(window)
+        input2 = Entry(window, show="*")
         Label(window, text="Welcome!").grid(row=0, column=0)
         user.grid(row=1, column=0)
         input1.grid(row=1, column=1)
         password.grid(row=2, column=0)
         input2.grid(row=2, column=1)
-        print(111)
-        Button(window, text="Sign in", command=self.log(input1,input2)).grid(row=3,column=0,sticky=W,pady=4)
-
+        self.input1 = input1
+        self.input2 = input2
+        Button(window, text="Sign in", command=self.log).grid(row=3,column=0,sticky=W,pady=4)
+        window.attributes('-topmost',True)
+        window.update()
+        self.loginwindow = window
         window.mainloop()
 
-    def log(self, input1, input2):
-        a = input1.get()
-        b = input2.get()
-        print(a,b)
+    def log(self):
+        print("username",self.input1.get(),"and password",self.input2.get(),"requests to login")
+        db = Database('127.0.0.1', self.input1.get(), self.input2.get(), 'Plates')
+        login = db.connect()
+        if not login:
+            messagebox.showinfo('Message','Wrong Credentials!')
+        else:
+            self.loginwindow.destroy()
+            messagebox.showinfo('Message','You are in!')
+            self.operation()
+
+
+
+
+    def operation(self):
+        op = Tk()
+        op.title("Admin Operations")
+        op.resizeable(0,0)
+        Label(op, text=".").place(x=0,y=0)
+        op.geometry('600x600')
+        op.mainloop()
+
+
+
 
 
     def showImg(self):
@@ -151,10 +152,6 @@ class Window(Frame):
         global num
         self.title(str(num))
         num = num + 1
-
-    def showText(self):
-        text = Label(self, text="Hey there good lookin!")
-        text.pack()
 
 
     def client_exit(self):
