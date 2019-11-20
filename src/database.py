@@ -2,6 +2,7 @@ import mysql.connector
 
 # User Mark created, password MarkMark123!
 class Database:
+    input = None
     def __init__(self, hostname, user, password, database):
         self.user = user
         self.password = password
@@ -16,40 +17,41 @@ class Database:
         'database': str(self.database),
         'raise_on_warnings': True,}
         try:
-            self.connect = mysql.connector.connect(**config)
+            self.connection = mysql.connector.connect(**config)
+            self.cursor = self.connection.cursor()
             return True
         except:
             return False
 
-    # search plates
+    # search plates, general searches
     def search(self, content):
-        with self.connection.cursor() as cursor:
-            cursor.execute(""
+        self.cursor.execute(""
                            "SELECT * "
-                           "FROM Plates"
-                           "WHERE num='%s' or car_color='%s' or owner_name='%s' or room='%s' or make='%s'" % content)
-            result = cursor.fetchall()
-            print(result)
+                           "FROM Plates "
+                           "WHERE num='%s' or car_color='%s' or owner_name='%s' or room='%s' or make='%s'"%(content, content, content, content, content))
+        result = self.cursor.fetchall()
+        print(result)
+        return result
 
+    # verify if the plate is in database
+    # work with recognition
     def verify(self, content) -> bool:
-        with self.connection.cursor() as cursor:
-            cursor.execute(""
+        self.cursor.execute(""
                            "SELECT *"
-                           "FROM Plates"
-                           "WHERE num='%s" % content)
-            result = cursor.fetchall()
-            value, = result
-            return value
+                           "FROM Plates "
+                           "WHERE num='%s'" % content)
+        result = self.cursor.fetchall()
+        if (len(result) > 0):
+            return True
+        return False
 
 
-
-
-    # work on new window for search and verify, add and delete
+    # control access, S, A, B, C
     # add and delete car plates
     def add(self):
-        return
+        print("add")
     def delete(self):
-        return
+        print("delete")
 
     # add and delete user
     def manage_user(self):

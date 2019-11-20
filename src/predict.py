@@ -113,7 +113,7 @@ provinces = [
 ]
 class StatModel(object):
 	def load(self, fn):
-		self.model = self.model.load(fn)  
+		self.model = self.model.load(fn)
 	def save(self, fn):
 		self.model.save(fn)
 class SVM(StatModel):
@@ -146,6 +146,10 @@ class CardPredictor:
 	def __del__(self):
 		self.save_traindata()
 	def train_svm(self):
+		'''
+
+		:return:
+		'''
 		#识别英文字母和数字
 		self.model = SVM(C=1, gamma=0.5)
 		#识别中文
@@ -534,5 +538,6 @@ class CardPredictor:
 if __name__ == '__main__':
 	c = CardPredictor()
 	c.train_svm()
-	r, roi, color = c.predict("POLICE.jpg")
+	img=imreadex("POLICE.jpg")
+	r, roi, color = c.predict(img)
 	print(r)

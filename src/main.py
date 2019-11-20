@@ -69,13 +69,14 @@ class Window(Frame):
         window.mainloop()
 
     def log(self):
-        print("username",self.input1.get(),"and password",self.input2.get(),"requests to login")
+        print("username",self.input1.get(),"and password",len(self.input2.get())*'*',"requests to login")
         db = Database('127.0.0.1', self.input1.get(), self.input2.get(), 'Plates')
         login = db.connect()
         if not login:
             messagebox.showinfo('Message','Wrong Credentials!')
         else:
             self.loginwindow.destroy()
+            self.db = db
             messagebox.showinfo('Message','You are in!')
             self.operation()
 
@@ -83,16 +84,27 @@ class Window(Frame):
 
 
     def operation(self):
-        op = Tk()
-        op.title("Admin Operations")
-        op.resizeable(0,0)
-        Label(op, text=".").place(x=0,y=0)
-        op.geometry('600x600')
-        op.mainloop()
+        self.op = Tk()
+        self.op.title("Admin Operations")
+        self.op.geometry('600x600')
+        input = Entry(self.op)
+        input.grid(row=0,column=0)
+        self.get = input
+        Button(self.op, text="Search", command=self.help_search).grid(row=0, column=1)
+        Button(self.op, text="Add", command=self.db.add).grid(row=1, column=0, sticky=W, pady=4)
+        Button(self.op, text="Delete", command=self.db.delete).grid(row=1, column=1, sticky=W, pady=4)
+        Button(self.op, text="Verify", command=self.help_verify).grid(row=2, column=0, sticky=W, pady=4)
+        self.op.mainloop()
 
+    def help_search(self):
+        str = self.get.get()
+        result = self.db.search(str)
+        Label(self.op, text=result).grid(row=4, column=0)
 
-
-
+    def help_verify(self):
+        str = self.get.get()
+        result = self.db.verify(str)
+        Label(self.op, text="Match? %s" % result).grid(row=4, column=0)
 
     def showImg(self):
         name = askopenfilename(
