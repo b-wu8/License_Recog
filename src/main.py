@@ -44,7 +44,37 @@ class Window(Frame):
         # menu.add_cascade(label = "video", menu = image)
         database = Menu(menu)
         database.add_command(label="Interface", command = self.database)
+        database.add_command(label="Search", command = self.search_page)
         menu.add_cascade(label="Database", menu=database)
+
+    def search_page(self):
+        window = Tk()
+        window.title("Search Page")
+        window.resizable(0,0)
+        window.geometry("400x100")
+        Button(window, text = "owner name", command = self.owner_search).pack()
+        Button(window, text = "plate number", command = self.plate_search).pack()
+
+    def owner_search(self):
+        window = Tk()
+        window.title("owner search page")
+        Label(window, text = "owner").grid(row = 0) # this is placed in 0 0
+        # 'Entry' is used to display the input-field
+        input = Entry(window).grid(row = 0, column = 1)
+        Button(window, text = "search").grid(row=3,column=0,sticky=W,pady=4)
+        self.owner = input
+
+
+    def plate_search(self):
+        window = Tk()
+        window.title("plate search page")
+        Label(window, text = "plate").grid(row = 0) # this is placed in 0 0
+        # 'Entry' is used to display the input-field
+        input = Entry(window).grid(row = 0, column = 1)
+        Button(window, text = "search").grid(row=3,column=0,sticky=W,pady=4)
+        self.plate = input
+
+
 
     def database(self):
         window = Tk()
@@ -185,4 +215,3 @@ app = Window(root)
 #mainloop
 root.geometry(str(root.winfo_screenwidth())+"x"+str(root.winfo_screenheight()))
 root.mainloop()
-
