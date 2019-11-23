@@ -2,7 +2,10 @@
 License Plate Recognition, implemented in Python.
 
 # Database Access Issue
-If the database connection fails, do the following:
+If the database connection fails, do the following by typing in the terminal and type in password: 
+```
+sudo mysql -u root -p
+```
 ```
 USE mysql;
 UPDATE user SET plugin='mysql_native_password' WHERE User='root';
