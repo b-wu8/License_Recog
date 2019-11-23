@@ -1,11 +1,102 @@
 import cv2
 from tkinter import *
-from tkinter import messagebox
+#import tkinter as tk
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import threading
 import time
 from database import Database
+
+LARGE_FONT= ("Verdana", 12)
+
+class SeaofBTCapp(Tk):
+
+    def __init__(self, *args, **kwargs):
+
+        Tk.__init__(self, *args, **kwargs)
+        self.winfo_toplevel().title("Search page")
+        container = Frame(self,width=400,height=100)
+        container.pack(side="top", fill="both", expand = True)# geometry = "400x400"
+
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+
+        for F in (Searchpage,OwnerSearch,PlateSearch):
+
+            frame = F(container, self)
+
+            self.frames[F] = frame
+
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame(Searchpage)
+
+    def show_frame(self, cont):
+
+        frame = self.frames[cont]
+        frame.tkraise()
+
+
+class Searchpage(Frame):
+
+    def __init__(self, parent, controller):
+        Frame.__init__(self,parent)
+        button = Button(self, text="owner name",
+                            command=lambda: controller.show_frame(OwnerSearch))
+        button.pack()
+
+        button2 = Button(self, text="plate number",
+                            command=lambda: controller.show_frame(PlateSearch))
+        button2.pack()
+
+
+
+class OwnerSearch(Frame):
+
+    def __init__(self, parent, controller):
+        Frame.__init__(self,parent)
+       # window.title("owner search page")
+        #Label(window, text = "owner").grid(row = 0) # this is placed in 0 0
+        # 'Entry' is used to display the input-field
+        label = Label(self, text="Owner Search", font=LARGE_FONT)#, font=LARGE_FONT
+        label.pack(pady=10,padx=10)
+        input = Entry(self)
+        input.pack()
+        button = Button(self, text="back",
+                            command=lambda: controller.show_frame(Searchpage))
+        button.grid_rowconfigure(0, weight=1)
+        button.grid_columnconfigure(0, weight=1)
+        button.pack(side=LEFT)
+        button = Button(self, text="search")#.grid(row=3,column=0,sticky=W,pady=4)
+        button.grid_rowconfigure(0, weight=1)
+        button.grid_columnconfigure(1, weight=1)
+        button.pack()
+        self.owner = input
+
+
+class PlateSearch(Frame):
+
+    def __init__(self, parent, controller):
+        Frame.__init__(self,parent)
+       # window.title("owner search page")
+        #Label(window, text = "owner").grid(row = 0) # this is placed in 0 0
+        # 'Entry' is used to display the input-field
+        label = Label(self, text="Plate Search", font=LARGE_FONT)#
+        label.pack(pady=10,padx=10)
+        input = Entry(self)
+        input.pack()
+        button = Button(self, text="back",
+                            command=lambda: controller.show_frame(Searchpage))
+        button.grid_rowconfigure(0, weight=1)
+        button.grid_columnconfigure(0, weight=1)
+        button.pack(side=LEFT)
+        button = Button(self, text="search")#.grid(row=3,column=0,sticky=W,pady=4)
+        button.grid_rowconfigure(0, weight=1)
+        button.grid_columnconfigure(1, weight=1)
+        button.pack()
+        self.plate = input
 
 # Here, we are creating our class, Window, and inheriting from the Frame
 # class. Frame is a class from the tkinter module. (see Lib/tkinter/__init__)
@@ -48,32 +139,8 @@ class Window(Frame):
         menu.add_cascade(label="Database", menu=database)
 
     def search_page(self):
-        window = Tk()
-        window.title("Search Page")
-        window.resizable(0,0)
-        window.geometry("400x100")
-        Button(window, text = "owner name", command = self.owner_search).pack()
-        Button(window, text = "plate number", command = self.plate_search).pack()
-
-    def owner_search(self):
-        window = Tk()
-        window.title("owner search page")
-        Label(window, text = "owner").grid(row = 0) # this is placed in 0 0
-        # 'Entry' is used to display the input-field
-        input = Entry(window).grid(row = 0, column = 1)
-        Button(window, text = "search").grid(row=3,column=0,sticky=W,pady=4)
-        self.owner = input
-
-
-    def plate_search(self):
-        window = Tk()
-        window.title("plate search page")
-        Label(window, text = "plate").grid(row = 0) # this is placed in 0 0
-        # 'Entry' is used to display the input-field
-        input = Entry(window).grid(row = 0, column = 1)
-        Button(window, text = "search").grid(row=3,column=0,sticky=W,pady=4)
-        self.plate = input
-
+        app = SeaofBTCapp()
+        app.mainloop()
 
 
     def database(self):
