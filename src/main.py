@@ -69,12 +69,30 @@ class OwnerSearch(Frame):
         button.grid_rowconfigure(0, weight=1)
         button.grid_columnconfigure(0, weight=1)
         button.pack(side=LEFT)
-        button = Button(self, text="search")#.grid(row=3,column=0,sticky=W,pady=4)
+        button = Button(self, text="search", command = self.do_search)#.grid(row=3,column=0,sticky=W,pady=4)
         button.grid_rowconfigure(0, weight=1)
         button.grid_columnconfigure(1, weight=1)
         button.pack()
         self.owner = input
 
+    def do_search(self):
+        window = Tk()
+        window.geometry("400x400")
+        window.title("Information")
+        label0 = Label(window, text="Plate Number:")
+        label0.place(x=0,y=0)
+        label1 = Label(window, text="Make:")
+        label1.place(x=0,y=30)
+        label2 = Label(window, text="Model:")
+        label2.place(x=0,y=60)
+        label3 = Label(window, text="Color:")
+        label3.place(x=0,y=90)
+        label4 = Label(window, text="Owner:")
+        label4.place(x=0,y=120)
+        label5 = Label(window, text="Age:")
+        label5.place(x=0,y=150)
+        label6 = Label(window, text="Room:")
+        label6.place(x=0,y=180)
 
 class PlateSearch(Frame):
 
@@ -92,11 +110,30 @@ class PlateSearch(Frame):
         button.grid_rowconfigure(0, weight=1)
         button.grid_columnconfigure(0, weight=1)
         button.pack(side=LEFT)
-        button = Button(self, text="search")#.grid(row=3,column=0,sticky=W,pady=4)
+        button = Button(self, text="search", command = self.do_search)#.grid(row=3,column=0,sticky=W,pady=4)
         button.grid_rowconfigure(0, weight=1)
         button.grid_columnconfigure(1, weight=1)
         button.pack()
         self.plate = input
+
+    def do_search(self):
+        window = Tk()
+        window.geometry("400x400")
+        window.title("Information")
+        label0 = Label(window, text="Plate Number:")
+        label0.place(x=0,y=0)
+        label1 = Label(window, text="Make:")
+        label1.place(x=0,y=30)
+        label2 = Label(window, text="Model:")
+        label2.place(x=0,y=60)
+        label3 = Label(window, text="Color:")
+        label3.place(x=0,y=90)
+        label4 = Label(window, text="Owner:")
+        label4.place(x=0,y=120)
+        label5 = Label(window, text="Age:")
+        label5.place(x=0,y=150)
+        label6 = Label(window, text="Room:")
+        label6.place(x=0,y=180)
 
 # Here, we are creating our class, Window, and inheriting from the Frame
 # class. Frame is a class from the tkinter module. (see Lib/tkinter/__init__)
@@ -141,7 +178,6 @@ class Window(Frame):
     def search_page(self):
         app = SeaofBTCapp()
         app.mainloop()
-
 
     def database(self):
         window = Tk()
