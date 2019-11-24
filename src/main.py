@@ -1,6 +1,7 @@
+import mysql.connector
 import cv2
 from tkinter import *
-#import tkinter as tk
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import threading
@@ -142,15 +143,14 @@ class Window(Frame):
     rgbImage = 0
     num = 0
     loginwindow = None
+    logedin = False
     # Define settings upon initialization. Here you can specify
     def __init__(self, master=None):
-
         # parameters that you want to send through the Frame class.
         Frame.__init__(self, master)
 
         #reference to the master widget, which is the tk window
         self.master = master
-
         #with that, we want to then run init_window, which doesn't yet exist
         self.init_window()
     def init_window(self):
@@ -171,50 +171,13 @@ class Window(Frame):
         image.add_command(label = "Screenshot",  command = self.video_demo)
         # menu.add_cascade(label = "video", menu = image)
         database = Menu(menu)
-        database.add_command(label="Interface", command = self.database)
+        # database.add_command(label="Interface", command = self.database)
         database.add_command(label="Search", command = self.search_page)
         menu.add_cascade(label="Database", menu=database)
 
     def search_page(self):
         app = SeaofBTCapp()
         app.mainloop()
-
-    def database(self):
-        window = Tk()
-        window.title("Admin Login Page")
-        window.resizable(0,0)
-        window.geometry("400x400")
-        user = Label(window, text="User ID")
-        input1 = Entry(window)
-        password = Label(window, text="Password")
-        input2 = Entry(window, show="*")
-        Label(window, text="Welcome!").grid(row=0, column=0)
-        user.grid(row=1, column=0)
-        input1.grid(row=1, column=1)
-        password.grid(row=2, column=0)
-        input2.grid(row=2, column=1)
-        self.input1 = input1
-        self.input2 = input2
-        Button(window, text="Sign in", command=self.log).grid(row=3,column=0,sticky=W,pady=4)
-        window.attributes('-topmost',True)
-        window.update()
-        self.loginwindow = window
-        window.mainloop()
-
-    def log(self):
-        print("username",self.input1.get(),"and password",len(self.input2.get())*'*',"requests to login")
-        db = Database('127.0.0.1', self.input1.get(), self.input2.get(), 'Plates')
-        login = db.connect()
-        if not login:
-            messagebox.showinfo('Message','Wrong Credentials!')
-        else:
-            self.loginwindow.destroy()
-            self.db = db
-            messagebox.showinfo('Message','You are in!')
-            self.operation()
-
-
-
 
     def operation(self):
         self.op = Tk()
@@ -228,6 +191,10 @@ class Window(Frame):
         Button(self.op, text="Delete", command=self.db.delete).grid(row=1, column=1, sticky=W, pady=4)
         Button(self.op, text="Verify", command=self.help_verify).grid(row=2, column=0, sticky=W, pady=4)
         self.op.mainloop()
+
+
+
+
 
     def help_search(self):
         str = self.get.get()
@@ -303,18 +270,57 @@ class Window(Frame):
         exit()
 
 
+# 把登陆界面放到最前面
+def database():
+    window = Tk()
+    window.title("Admin Login Page")
+    window.resizable(0,0)
+    window.geometry("400x400")
+    user = Label(window, text="User ID")
+    input1 = Entry(window)
+    password = Label(window, text="Password")
+    input2 = Entry(window, show="*")
+    Label(window, text="Welcome!").grid(row=0, column=0)
+    user.grid(row=1, column=0)
+    input1.grid(row=1, column=1)
+    password.grid(row=2, column=0)
+    input2.grid(row=2, column=1)
+    Button(window, text="Sign in", command=log).grid(row=3,column=0,sticky=W,pady=4)
+    window.attributes('-topmost',True)
+    window.update()
+    window.mainloop()
+    return input1, input2
 
+def log(s1,s2):
+    print(s1.get(),s2.get())
+    db = Database('127.0.0.1', s1.get(), s2.get(), 'Plates')
+    login = db.connect()
+    if not login:
+        messagebox.showinfo('Message','Wrong Credentials!')
+        return False
+    else:
+        messagebox.showinfo('Message','You are in!')
+        return True
+
+s1,s2=database()
+bool = log(s1,s2)
+if bool:
+    print("next")
+else:
+    print("no")
 
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
-root = Tk()
-root.title("Licence_Recog")
-root.geometry("800x600")
-
-#creation of an instance
-app = Window(root)
 
 
-#mainloop
-root.geometry(str(root.winfo_screenwidth())+"x"+str(root.winfo_screenheight()))
-root.mainloop()
+# root = Tk()
+# root.title("Licence_Recog")
+# root.geometry("800x600")
+#
+# #creation of an instance
+# app = Window(root)
+#
+# #mainloop
+# root.geometry(str(root.winfo_screenwidth())+"x"+str(root.winfo_screenheight()))
+# root.mainloop()
+#

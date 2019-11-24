@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import errorcode
 
 # User Mark created, password MarkMark123!
 class Database:
@@ -9,19 +10,21 @@ class Database:
         self.database = database
         self.host = hostname
 
+
     def connect(self):
         config = {
         'user': str(self.user),
         'password': str(self.password),
         'host': str(self.host),
-        'database': str(self.database),
-        'raise_on_warnings': True,}
-        try:
-            self.connection = mysql.connector.connect(**config)
+        'database': str(self.database)
+        }
+        import mysql.connector
+        self.connection = mysql.connector.connect(**config)
+        if self.connection.is_connected():
             self.cursor = self.connection.cursor()
             return True
-        except:
-            return False
+        return False
+
 
     # search plates, general searches
     def search(self, content):
