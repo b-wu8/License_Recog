@@ -1,0 +1,11 @@
+MCLRENF1, McLaren, F1, Grey, Charles Stanton, 21, F14-A
+FERRARI, Ferrari, LaFerrari, Ferrari Red, John Kirkman, 52, A03-B
+HXF-1522, Mazda, MX-5, Black, Ziyang Ji, 20, C09-C
+BENT, Bentaley, Continental GT, Chocolate Brown, Richard Silver, 45, F11-B
+YALL, McLaren, 720S, Purple, Thomas Jorgensen, 43, D03-A
+GT63S, Mercedes-Benz, AMG GT63S 4 Door Coupe, Grey, Daniel Harris, 23, B02-A
+P0RSCHE, Porsche, Panamera Turbo S E Hybrid, White, Frank Matlock, 25, E13-C
+G-WAGON, Mercedes-Benz, AMG G65 4X4, Black, Ben Turing, 42, D08-E
+POL1ZE1, Lamborghini, Hurricane Performante, Yellow, Jack Norris, 29, E08-F
+BUSTME, Nissan, GTR Nismo, White, Rick Kubica, 40, A09-B
+MORNING, McLaren, P1, Orange, Charles Stanton, 21, F14-A

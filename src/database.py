@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 
 # User Mark created, password MarkMark123!
+# User Admin created, password Admin123!
 class Database:
     input = None
     def __init__(self, hostname, user, password, database):
@@ -18,12 +19,22 @@ class Database:
         'host': str(self.host),
         'database': str(self.database)
         }
-        import mysql.connector
-        self.connection = mysql.connector.connect(**config)
-        if self.connection.is_connected():
-            self.cursor = self.connection.cursor()
-            return True
-        return False
+        # need to change here when cant login
+        try:
+            self.connection = mysql.connector.connect(**config)
+            if self.connection.is_connected():
+                self.cursor=self.connection.cursor()
+                return True
+            else:
+                print("Something went wrong")
+                return False
+        except mysql.connector.Error as err:
+            if err.errno==errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something wrong with credentials")
+                return False
+            else:
+                print(err)
+            return False
 
 
     # search plates, general searches
@@ -31,9 +42,8 @@ class Database:
         self.cursor.execute(""
                            "SELECT * "
                            "FROM Plates "
-                           "WHERE num='%s' or car_color='%s' or owner_name='%s' or room='%s' or make='%s'"%(content, content, content, content, content))
+                           "WHERE num='{}' or car_color='{}' or owner_name='{}' or room='{}' or make='{}'".format(content, content, content, content, content))
         result = self.cursor.fetchall()
-        print(result)
         return result
 
     # verify if the plate is in database
@@ -51,10 +61,16 @@ class Database:
 
     # control access, S, A, B, C
     # add and delete car plates
-    def add(self):
-        print("add")
-    def delete(self):
-        print("delete")
+    def add(self, num, make, model, car_color, owner_name, age, room):
+        query = "INSERT INTO Plates VALUES ('{}','{}','{}','{}','{}',{},'{}');".format(num, make, model, car_color, owner_name, age, room)
+        self.cursor.execute(query)
+        self.connection.commit()
+        return True
+    def delete(self, plate):
+        query = "DELETE FROM Plates WHERE num='{}'".format(plate)
+        self.cursor.execute(query)
+        self.connection.commit()
+        return True
 
     # add and delete user
     def manage_user(self):

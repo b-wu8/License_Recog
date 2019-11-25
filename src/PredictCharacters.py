@@ -1,12 +1,13 @@
 import SegmentCharacters
 import pickle
 
-
-print("Loading model")
+# class PredictCharacters:
+#
+#     def get_plate(self):
 filename = './finalized_model.sav'
 model = pickle.load(open(filename, 'rb'))
 
-print('Model loaded. Predicting characters of number plate')
+print('Predicting characters of number plate')
 classification_result = []
 for each_character in SegmentCharacters.characters:
     # converts it to a 1D array

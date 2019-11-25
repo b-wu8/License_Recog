@@ -8,8 +8,7 @@ from skimage.measure import regionprops
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-
-filename = '../pics/test/FERRARI.jpg'
+filename = '../pics/test/GGU9368.png'
 # filename = './car.png'
 
 # video capture feed

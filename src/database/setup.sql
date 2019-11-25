@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS Plates;
 CREATE DATABASE Plates;
 CONNECT Plates;
 
-CREATE TABLE Plates (
+CREATE TABLE Plates(
     num    VARCHAR(8) PRIMARY KEY,
     make   VARCHAR(32),
     model  VARCHAR(32),
@@ -12,7 +12,3 @@ CREATE TABLE Plates (
     room   VARCHAR(32)
 );
 
-CREATE TABLE Admin (
-    name    VARCHAR(32) PRIMARY KEY,
-    clearance    CHAR(1)
-);
