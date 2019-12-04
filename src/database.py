@@ -59,19 +59,28 @@ class Database:
         return False
 
 
-    # control access, S, A, B, C
-    # add and delete car plates
     def add(self, num, make, model, car_color, owner_name, age, room):
         query = "INSERT INTO Plates VALUES ('{}','{}','{}','{}','{}',{},'{}');".format(num, make, model, car_color, owner_name, age, room)
         self.cursor.execute(query)
         self.connection.commit()
         return True
+
     def delete(self, plate):
         query = "DELETE FROM Plates WHERE num='{}'".format(plate)
         self.cursor.execute(query)
         self.connection.commit()
         return True
 
-    # add and delete user
-    def manage_user(self):
-        return
+    def update(self, old, num, make, model, car_color, owner_name, age, room):
+        query = "UPDATE Plates SET num='{}', make='{}', model='{}', car_color='{}', owner_name='{}', age={}, room='{}'" \
+                "WHERE num='{}';".format(num, make, model, car_color, owner_name, age, room, old)
+        self.cursor.execute(query)
+        self.connection.commit()
+        return True
+
+    def add_user(self, username, password):
+        query = "CREATE USER '{}'@'localhost' IDENTIFIED BY '{}';".format(username, password)
+        print(query)
+        self.cursor.execute(query)
+        self.connection.commit()
+        return True

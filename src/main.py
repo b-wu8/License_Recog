@@ -9,11 +9,14 @@ import time
 from database import Database
 # import PredictCharacters
 
+# checkbox
+# user access control
+# screenshot recog
+# connect recog
 
 LARGE_FONT= ("Verdana", 12)
-
+# class for database search panel
 class SeaofBTCapp(Tk):
-
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         self.winfo_toplevel().title("Search page")
@@ -32,22 +35,19 @@ class SeaofBTCapp(Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
+# class for database search subpanel
 class Searchpage(Frame):
-
     def __init__(self, parent, controller):
         Frame.__init__(self,parent)
         button = Button(self, text="Owner Name",
                             command=lambda: controller.show_frame(OwnerSearch))
         button.pack()
-
         button2 = Button(self, text="Plate Number",
                             command=lambda: controller.show_frame(PlateSearch))
         button2.pack()
 
-
-
+# class for license plate owner search page
 class OwnerSearch(Frame):
-
     def __init__(self, parent, controller):
         Frame.__init__(self,parent)
        # window.title("owner search page")
@@ -185,6 +185,7 @@ class Window(Frame):
     num = 0
     loginwindow = None
     logedin = False
+
     # Define settings upon initialization. Here you can specify
     def __init__(self, master=None):
         # parameters that you want to send through the Frame class.
@@ -195,6 +196,7 @@ class Window(Frame):
         self.prediction = Label()
         #with that, we want to then run init_window, which doesn't yet exist
         self.init_window()
+
     def init_window(self):
         # changing the title of our master widget
         self.master.title("Licence_Recog")
@@ -228,14 +230,48 @@ class Window(Frame):
         user = Tk()
         user.geometry('400x400')
         user.title('User Access Control')
-        label0 = Label(user, text='Stay tuned for this function!')
-        label0.place(x=100,y=100)
-        # b1 = Button(user, text='Add', command=self.add_user)
-        # b1.place(x=100, y=50)
+        # label0 = Label(user, text='Stay tuned for this function!')
+        # label0.place(x=100,y=100)
+        b1 = Button(user, text='Add', command=self.add_user)
+        b1.place(x=100, y=50)
         # b2 = Button(user, text='Remove', command=self.remove_user)
         # b2.place(x=100, y=100)
         # b3 = Button(user, text='Edit', command=self.edit_user)
         # b3.place(x=100, y=150)
+
+    def add_user(self):
+        window = Tk()
+        window.geometry('400x400')
+        window.title('User Management')
+        label0 = Label(window, text='Username')
+        label0.place(x=50,y=50)
+        self.e1 = Entry(window)
+        self.e1.place(x=50,y=80)
+        label1 = Label(window, text='Password')
+        label1.place(x=50, y=110)
+        self.e2 = Entry(window, show='*')
+        self.e2.place(x=50,y=140)
+        self.read = BooleanVar()
+        self.edit = BooleanVar()
+        self.ch1 = Checkbutton(window, text='READ', var=self.read)
+        self.ch1.place(x=50, y=190)
+        self.ch2 = Checkbutton(window, text='EDIT', var=self.edit)
+        self.ch2.place(x=120, y=190)
+        b1 = Button(window, text='Create', command=self.add_user_help)
+        b1.place(x=50, y=300)
+
+    def add_user_help(self):
+        print(self.read.get())
+        print(self.edit.get())
+        print(3)
+        name = self.e1.get()
+        password = self.e2.get()
+        print(name, password)
+        # feedback = db.add_user(name, password)
+        # if feedback:
+        #     messagebox.showinfo('Message', 'Created user '+name+" successfully")
+        # else:
+        #     messagebox.showinfo('Message', 'Something went wrong. Try again later.')
 
     def database_page(self):
         self.ui = Tk()
@@ -252,8 +288,71 @@ class Window(Frame):
         window = Tk()
         window.geometry('400x400')
         window.title('License Plate Management')
-        label0 = Label(window, text='Stay tuned for this function!')
-        label0.place(x=100,y=100)
+        label0 = Label(window, text='License Plate:')
+        label0.place(x=50,y=30)
+        self.re1 = Entry(window)
+        self.re1.place(x=50,y=60)
+        b1 = Button(window, text='Search', command=self.edit_help)
+        b1.place(x=50,y=100)
+
+    def edit_help(self):
+        pl = self.re1.get()
+        feedback = db.search(pl)[0]
+        self.old_plate = feedback[0]
+        window = Tk()
+        window.geometry('400x400')
+        window.title('License Plate Info')
+        label0 = Label(window, text="Plate Number:")
+        label0.place(x=0,y=0)
+        self.r1 = Entry(window)
+        self.r1.insert(0,str(feedback[0]))
+        self.r1.place(x=100,y=0)
+        label1 = Label(window, text="Make:")
+        label1.place(x=0,y=30)
+        self.r2 = Entry(window)
+        self.r2.insert(0,str(feedback[1]))
+        self.r2.place(x=100,y=30)
+        label2 = Label(window, text="Model:")
+        label2.place(x=0,y=60)
+        self.r3 = Entry(window)
+        self.r3.insert(0,str(feedback[2]))
+        self.r3.place(x=100,y=60)
+        label3 = Label(window, text="Color:")
+        label3.place(x=0,y=90)
+        self.r4 = Entry(window)
+        self.r4.insert(0,str(feedback[3]))
+        self.r4.place(x=100,y=90)
+        label4 = Label(window, text="Owner:")
+        label4.place(x=0,y=120)
+        self.r5 = Entry(window)
+        self.r5.insert(0,str(feedback[4]))
+        self.r5.place(x=100,y=120)
+        label5 = Label(window, text="Age:")
+        label5.place(x=0,y=150)
+        self.r6 = Entry(window)
+        self.r6.insert(0,str(feedback[5]))
+        self.r6.place(x=100,y=150)
+        label6 = Label(window, text="Room:")
+        label6.place(x=0,y=180)
+        self.r7 = Entry(window)
+        self.r7.insert(0,str(feedback[6]))
+        self.r7.place(x=100,y=180)
+        b1 = Button(window, text='Update', command=self.edit_help_help)
+        b1.place(x=100,y=240)
+
+    def edit_help_help(self):
+        r1 = self.r1.get()
+        r2 = self.r2.get()
+        r3 = self.r3.get()
+        r4 = self.r4.get()
+        r5 = self.r5.get()
+        r6 = self.r6.get()
+        r7 = self.r7.get()
+        feedback = db.update(self.old_plate, r1, r2, r3, r4, r5, r6, r7)
+        if feedback:
+            messagebox.showinfo('Message', 'Updated info for '+self.old_plate+" successfully")
+        else:
+            messagebox.showinfo('Message','Something went wrong. Try again later.')
 
     def remove_plate(self):
         window = Tk()
@@ -308,7 +407,6 @@ class Window(Frame):
         self.r7.place(x=100,y=180)
         b1 = Button(window, text='Add', command=self.add_help)
         b1.place(x=100,y=240)
-
 
     def add_help(self):
         r1 = self.r1.get()
@@ -423,7 +521,7 @@ class Main:
     def log(self):
         self.user = self.input1.get()
         self.password = self.input2.get()
-        self.db = Database('127.0.0.1', self.user, self.password, 'Plates')
+        self.db = Database('localhost', self.user, self.password, 'Plates')
         self.login = self.db.connect()
         if not self.login:
             messagebox.showinfo('Message','Wrong Credentials!')
