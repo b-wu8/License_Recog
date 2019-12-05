@@ -47,5 +47,5 @@ UPDATE user SET plugin='mysql_native_password' WHERE User='root';
 This gives MySQL permission to run as base user. 
 
 # Machine Learning Tutorial and References
-https://github.com/L1aoXingyu/pytorch-beginner
+https://github.com/L1aoXingyu/pytorch-beginner \
 https://zhuanlan.zhihu.com/p/26854386
