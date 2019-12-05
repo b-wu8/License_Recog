@@ -4,7 +4,6 @@ from tkinter import *
 from tkinter import messagebox, ttk
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
-import threading
 import time
 from database import Database
 import sys
@@ -592,7 +591,7 @@ class Window(Frame):
             state.config(font=('Courier',20))
             state.place(x=1080, y=350)
         else:
-            pl = self.name.split('/')[-1].split('.')[0]
+            pl = imageName.split('/')[-1].split('.')[0]
             m = messagebox.askquestion('Message','System is not confident enough. Is it '+pl+"?")
             if m == 'yes':
                 self.prediction = Label(self, text=pl)
