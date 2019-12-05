@@ -7,8 +7,9 @@ from skimage import measure
 from skimage.measure import regionprops
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import sys
 
-filename = '../pics/test/GGU9368.jpg'
+filename = sys.argv[1]
 # filename = './car.png'
 
 # video capture feed
@@ -37,7 +38,6 @@ filename = '../pics/test/GGU9368.jpg'
 # it should be a 2 dimensional array
 
 car_image = imread(filename, as_gray=True)
-print(car_image.shape)
 
 # the next line is not compulsory however, a grey scale pixel
 # in skimage ranges between 0 & 1. multiplying it with 255
@@ -51,7 +51,7 @@ binary_car_image = gray_car_image > threshold_value
 # print(binary_car_image)
 ax2.imshow(binary_car_image, cmap="gray")
 # ax2.imshow(gray_car_image, cmap="gray")
-plt.show()
+# plt.show()
 
 # CCA (finding connected regions) of binary image
 
@@ -99,9 +99,9 @@ for region in regionprops(label_image):
                                        linewidth=2, fill=False)
         ax1.add_patch(rectBorder)
         # draw a red rectangle over those regions
-if(flag == 1):
-    # print(plate_like_objects[0])
-    plt.show()
+# if(flag == 1):
+#     # print(plate_like_objects[0])
+#     plt.show()
 
 
 if(flag==0):
@@ -141,4 +141,4 @@ if(flag==0):
             ax1.add_patch(rectBorder)
             # draw a red rectangle over those regions
     # print(plate_like_objects[0])
-    plt.show()
+    # plt.show()

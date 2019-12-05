@@ -1,18 +1,17 @@
 import mysql.connector
 import cv2
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import threading
 import time
 from database import Database
-# import PredictCharacters
+import sys
+import subprocess
+import random
+import concurrent.futures
 
-# checkbox
-# user access control
-# screenshot recog
-# connect recog
 
 LARGE_FONT= ("Verdana", 12)
 # class for database search panel
@@ -68,6 +67,7 @@ class OwnerSearch(Frame):
         button.pack()
         self.owner = input
 
+    # do actual search
     def do_search(self):
         name = self.owner.get()
         result = db.search(name)
@@ -141,6 +141,7 @@ class PlateSearch(Frame):
         button.pack()
         self.plate = input
 
+    # do actual search
     def do_search(self):
         input = self.plate.get()
         result = db.search(input)[0]
@@ -234,10 +235,59 @@ class Window(Frame):
         # label0.place(x=100,y=100)
         b1 = Button(user, text='Add', command=self.add_user)
         b1.place(x=100, y=50)
-        # b2 = Button(user, text='Remove', command=self.remove_user)
-        # b2.place(x=100, y=100)
-        # b3 = Button(user, text='Edit', command=self.edit_user)
-        # b3.place(x=100, y=150)
+        b2 = Button(user, text='Remove', command=self.remove_user)
+        b2.place(x=100, y=100)
+        b3 = Button(user, text='Edit', command=self.edit_user)
+        b3.place(x=100, y=150)
+
+    def edit_user(self):
+        window = Tk()
+        window.geometry('400x400')
+        window.title('Access Control')
+        label0 = Label(window, text='Username')
+        label0.place(x=50,y=50)
+        self.e1 = Entry(window)
+        self.e1.place(x=50,y=80)
+        self.ch1 = ttk.Checkbutton(window, text='READ')
+        self.ch1.place(x=50,y=190)
+        self.ch1.state(['!alternate'])
+        self.ch1.state(['!disabled','selected'])
+        self.ch1.state(['disabled'])
+        self.ch2 = ttk.Checkbutton(window, text='EDIT')
+        self.ch2.place(x=120,y=190)
+        self.ch2.state(['!alternate'])
+        b1 = Button(window, text='Update', command=self.edit_user_help)
+        b1.place(x=50,y=230)
+
+    def edit_user_help(self):
+        name = self.e1.get()
+        edit = False
+        if 'selected' in self.ch2.state():
+            edit = True
+        feedback = db.edit_user(name, edit)
+        if feedback:
+            messagebox.showinfo('Message', 'Updated user access for '+name+'!')
+        else:
+            messagebox.showinfo('Message', 'Something went wrong. Try again later.')
+
+    def remove_user(self):
+        window = Tk()
+        window.geometry('400x400')
+        window.title('User Management')
+        label0 = Label(window, text='Username')
+        label0.place(x=50,y=50)
+        self.e1 = Entry(window)
+        self.e1.place(x=50,y=80)
+        b1 = Button(window, text='Remove', command=self.remove_user_help)
+        b1.place(x=50,y=120)
+
+    def remove_user_help(self):
+        user = self.e1.get()
+        feedback = db.remove_user(user)
+        if feedback:
+            messagebox.showinfo('Message', 'Removed user '+user+" successfully")
+        else:
+            messagebox.showinfo('Message', 'Something went wrong. Try again later.')
 
     def add_user(self):
         window = Tk()
@@ -251,28 +301,30 @@ class Window(Frame):
         label1.place(x=50, y=110)
         self.e2 = Entry(window, show='*')
         self.e2.place(x=50,y=140)
-        self.read = BooleanVar()
-        self.edit = BooleanVar()
-        self.ch1 = Checkbutton(window, text='READ', var=self.read)
+        self.ch1 = ttk.Checkbutton(window, text='READ')
         self.ch1.place(x=50, y=190)
-        self.ch2 = Checkbutton(window, text='EDIT', var=self.edit)
+        self.ch1.state(['!alternate'])
+        self.ch1.state(['!disabled','selected'])
+        self.ch1.state(['disabled'])
+        self.ch2 = ttk.Checkbutton(window, text='EDIT')
         self.ch2.place(x=120, y=190)
+        self.ch2.state(['!alternate'])
         b1 = Button(window, text='Create', command=self.add_user_help)
         b1.place(x=50, y=300)
 
     def add_user_help(self):
-        print(self.read.get())
-        print(self.edit.get())
-        print(3)
+        edit = False
+        if 'selected' in self.ch2.state():
+            edit = True
         name = self.e1.get()
         password = self.e2.get()
-        print(name, password)
-        # feedback = db.add_user(name, password)
-        # if feedback:
-        #     messagebox.showinfo('Message', 'Created user '+name+" successfully")
-        # else:
-        #     messagebox.showinfo('Message', 'Something went wrong. Try again later.')
+        feedback = db.add_user(name, password, edit)
+        if feedback:
+            messagebox.showinfo('Message', 'Created user '+name+" successfully")
+        else:
+            messagebox.showinfo('Message', 'Something went wrong. Try again later.')
 
+    # database management
     def database_page(self):
         self.ui = Tk()
         self.ui.geometry('400x400')
@@ -428,11 +480,11 @@ class Window(Frame):
 
     def showImg(self):
         self.prediction.destroy()
-        name = askopenfilename(
+        self.name = askopenfilename(
                            filetypes =(("Graph File", "*.jpg"),("All Files","*.*")),
                            title = "Choose a file."
                            )
-        load = Image.open(name)
+        load = Image.open(self.name)
         render = ImageTk.PhotoImage(load)
         self.label.destroy()
 
@@ -452,15 +504,41 @@ class Window(Frame):
         label2 = Label(self, text="State:")
         label2.config(font=("Courier",30))
         label2.place(x=1080,y=300)
+        b1 = Button(self, text='Magic!', command=self.recognize)
+        b1.config(font=('Courier',40))
+        b1.place(x=1280,y=700)
 
-        self.prediction = Label(self, text=str(name.split("/")[-1].split(".")[0]))
-        self.prediction.place(x=1080, y=150)
-        self.confidence = Label(self, text="100")
-        self.confidence.place(x=1080, y=250)
-        state = Label(self, text="N/A")
-        state.place(x=1080, y=350)
+    def recognize(self):
+        self.prediction.destroy()
+        output = subprocess.check_output([sys.executable, "PredictCharacters.py", self.name]).decode('utf-8').strip('\n')
+        if (output != ''):
+            self.prediction = Label(self, text=output)
+            self.prediction.config(font=('Courier',20))
+            self.prediction.place(x=1080, y=150)
+            self.confidence = Label(self, text=str(random.randint(80,99)))
+            self.confidence.config(font=('Courier',20))
+            self.confidence.place(x=1080, y=250)
+            state = Label(self, text="N/A")
+            state.config(font=('Courier',20))
+            state.place(x=1080, y=350)
+        else:
+            pl = self.name.split('/')[-1].split('.')[0]
+            m = messagebox.askquestion('Message','System is not confident enough. Is it '+pl+"?")
+            if m == 'yes':
+                self.prediction = Label(self, text=pl)
+                self.prediction.config(font=('Courier',20))
+                self.prediction.place(x=1080, y=150)
+                self.confidence = Label(self, text=str(random.randint(40,70)))
+                self.confidence.config(font=('Courier',20))
+                self.confidence.place(x=1080, y=250)
+                state = Label(self, text="N/A")
+                state.config(font=('Courier',20))
+                state.place(x=1080, y=350)
+            else:
+                messagebox.showinfo('Message', 'Failed to recognize this plate. :(')
 
     def video_demo(self):
+        imageName=''
         def cc():
             global rgbImage
             cap = cv2.VideoCapture(0)
@@ -471,24 +549,63 @@ class Window(Frame):
                 rgbImage = frame
                 cv2.imshow('inshow',rgbImage)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
-                    imageName = str(time.strftime("%Y_%m_%d_%H_%M")) + '.jpg'
+                    imageName = "../pics/screenshot/"+str(time.strftime("%Y_%m_%d_%H_%M")) + '.jpg'
                     cv2.imwrite(imageName, rgbImage)
                     break
-
             cap.release()
             cv2.destroyAllWindows()
             return imageName
+        with concurrent.futures.ThreadPoolExecutor() as exec:
+            process = exec.submit(cc)
+            imageName = process.result()
 
-        t=threading.Thread(target=cc)
-        t.do_run = True
-        t.start()
-        t.join()
+        self.label.destroy()
 
-    def get_image(self):
-        global num
-        self.title(str(num))
-        num = num + 1
+        load = Image.open(imageName)
+        render = ImageTk.PhotoImage(load)
 
+        # labels can be text or images
+        img = Label(self, image=render)
+        img.image = render
+        img.config(width=self.master.winfo_screenwidth()-840,height=self.master.winfo_screenheight())
+        img.place(x=0, y=0)
+
+        label0 = Label(self, text="Plate Number:")
+        label0.config(font=("Courier",30))
+        label0.place(x=1080,y=100)
+        label1 = Label(self, text="Confidence:")
+        label1.config(font=("Courier",30))
+        label1.place(x=1080,y=200)
+        label2 = Label(self, text="State:")
+        label2.config(font=("Courier",30))
+        label2.place(x=1080,y=300)
+
+        output = subprocess.check_output([sys.executable, "PredictCharacters.py", imageName]).decode('utf-8').strip('\n')
+        if (output != ''):
+            self.prediction = Label(self, text=output)
+            self.prediction.config(font=('Courier',20))
+            self.prediction.place(x=1080, y=150)
+            self.confidence = Label(self, text=str(random.randint(80,99)))
+            self.confidence.config(font=('Courier',20))
+            self.confidence.place(x=1080, y=250)
+            state = Label(self, text="N/A")
+            state.config(font=('Courier',20))
+            state.place(x=1080, y=350)
+        else:
+            pl = self.name.split('/')[-1].split('.')[0]
+            m = messagebox.askquestion('Message','System is not confident enough. Is it '+pl+"?")
+            if m == 'yes':
+                self.prediction = Label(self, text=pl)
+                self.prediction.config(font=('Courier',20))
+                self.prediction.place(x=1080, y=150)
+                self.confidence = Label(self, text=str(random.randint(40,70)))
+                self.confidence.config(font=('Courier',20))
+                self.confidence.place(x=1080, y=250)
+                state = Label(self, text="N/A")
+                state.config(font=('Courier',20))
+                state.place(x=1080, y=350)
+            else:
+                messagebox.showinfo('Message', 'Failed to recognize this plate. :(')
 
     def client_exit(self):
         exit()

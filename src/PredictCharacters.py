@@ -1,5 +1,7 @@
 import SegmentCharacters
 import pickle
+import sys
+import subprocess
 
 # class PredictCharacters:
 #
@@ -7,7 +9,7 @@ import pickle
 filename = './finalized_model.sav'
 model = pickle.load(open(filename, 'rb'))
 
-print('Predicting characters of number plate')
+# print('Predicting characters of number plate')
 classification_result = []
 for each_character in SegmentCharacters.characters:
     # converts it to a 1D array
@@ -15,15 +17,15 @@ for each_character in SegmentCharacters.characters:
     result = model.predict(each_character)
     classification_result.append(result)
 
-print('Classification result')
-print(classification_result)
+# print('Classification result')
+# print(classification_result)
 
 plate_string = ''
 for eachPredict in classification_result:
     plate_string += eachPredict[0]
 
-print('Predicted license plate')
-print(plate_string)
+# print('Predicted license plate')
+# print(plate_string)
 
 # it's possible the characters are wrongly arranged
 # since that's a possibility, the column_list will be
@@ -35,5 +37,5 @@ rightplate_string = ''
 for each in SegmentCharacters.column_list:
     rightplate_string += plate_string[column_list_copy.index(each)]
 
-print('License plate')
+# print('License plate')
 print(rightplate_string)

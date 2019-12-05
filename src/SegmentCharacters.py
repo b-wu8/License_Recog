@@ -42,4 +42,4 @@ for regions in regionprops(labelled_plate):
         # this is just to keep track of the arrangement of the characters
         column_list.append(x0)
 # print(characters)
-plt.show()
+# plt.show()

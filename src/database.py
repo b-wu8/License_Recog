@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 
 # User Mark created, password MarkMark123!
-# User Admin created, password Admin123!
+# User admin created, password Admin123!
 class Database:
     input = None
     def __init__(self, hostname, user, password, database):
@@ -11,7 +11,7 @@ class Database:
         self.database = database
         self.host = hostname
 
-
+    # connect to local database
     def connect(self):
         config = {
         'user': str(self.user),
@@ -19,7 +19,6 @@ class Database:
         'host': str(self.host),
         'database': str(self.database)
         }
-        # need to change here when cant login
         try:
             self.connection = mysql.connector.connect(**config)
             if self.connection.is_connected():
@@ -36,7 +35,6 @@ class Database:
                 print(err)
             return False
 
-
     # search plates, general searches
     def search(self, content):
         self.cursor.execute(""
@@ -46,41 +44,82 @@ class Database:
         result = self.cursor.fetchall()
         return result
 
-    # verify if the plate is in database
-    # work with recognition
-    def verify(self, content) -> bool:
-        self.cursor.execute(""
-                           "SELECT *"
-                           "FROM Plates "
-                           "WHERE num='%s'" % content)
-        result = self.cursor.fetchall()
-        if (len(result) > 0):
-            return True
-        return False
-
-
+    # add new plates
     def add(self, num, make, model, car_color, owner_name, age, room):
         query = "INSERT INTO Plates VALUES ('{}','{}','{}','{}','{}',{},'{}');".format(num, make, model, car_color, owner_name, age, room)
-        self.cursor.execute(query)
-        self.connection.commit()
-        return True
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+            return True
+        except mysql.connector.errorcode as err:
+            print(err)
+            return False
 
+    # remove existing plates
     def delete(self, plate):
         query = "DELETE FROM Plates WHERE num='{}'".format(plate)
-        self.cursor.execute(query)
-        self.connection.commit()
-        return True
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+            return True
+        except mysql.connector.errorcode as err:
+            print(err)
+            return False
 
+    # change existing plate info
     def update(self, old, num, make, model, car_color, owner_name, age, room):
         query = "UPDATE Plates SET num='{}', make='{}', model='{}', car_color='{}', owner_name='{}', age={}, room='{}'" \
                 "WHERE num='{}';".format(num, make, model, car_color, owner_name, age, room, old)
-        self.cursor.execute(query)
-        self.connection.commit()
-        return True
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+            return True
+        except mysql.connector.errorcode as err:
+            print(err)
+            return False
 
-    def add_user(self, username, password):
-        query = "CREATE USER '{}'@'localhost' IDENTIFIED BY '{}';".format(username, password)
-        print(query)
-        self.cursor.execute(query)
-        self.connection.commit()
-        return True
+    # add new user with access control
+    def add_user(self, username, password, edit):
+        query = "CREATE USER '{}'@'localhost' IDENTIFIED BY '{}'; ".format(username, password)
+        query += "GRANT SELECT ON Plates.Plates TO '{}'@'localhost'; ".format(username)
+        if edit:
+            query += "GRANT UPDATE, INSERT, DELETE ON Plates.Plates TO '{}'@'localhost'; ".format(username)
+
+        try:
+            self.cursor.execute(query)
+            return True
+        except mysql.connector.errorcode as err:
+            print(err)
+            return False
+
+    # remove existing user
+    def remove_user(self, user):
+        query = "DROP USER '{}'@'localhost';".format(user)
+        try:
+            self.cursor.execute(query)
+            return True
+        except mysql.connector.errorcode as err:
+            print(err)
+            return False
+
+    # change existing user permissions
+    def edit_user(self, user, edit):
+        if user=='root':
+            return False
+        try:
+            query = "SHOW GRANTS FOR '{}'@'localhost';".format(user)
+            self.cursor.execute(query)
+            result = self.cursor.fetchall()[1][0]
+            if 'INSERT' not in result and edit:
+                query = "GRANT UPDATE, INSERT, DELETE ON Plates.Plates TO '{}'@'localhost'; ".format(user)
+                self.cursor.execute(query)
+            elif 'INSERT' in result and not edit:
+                query = "REVOKE UPDATE, INSERT, DELETE ON Plates.Plates FROM '{}'@'localhost'; ".format(user)
+                self.cursor.execute(query)
+            return True
+        except mysql.connector.errorcode as err:
+            print(err)
+            return False
+
+
+
