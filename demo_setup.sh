@@ -1,4 +1,4 @@
 cd src/database
-mysql -u root < setup.sql
+mysql -u root -p < setup.sql
 cd ..
 python3 LoadData.py
